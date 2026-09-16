@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/flatly/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Drunken Clam's Database</title>
+    <style>
+        body { background-color: #5D9CEC !important; min-height: 100vh; overflow-x: hidden; }
+        .clam-brown { background-color: #5D4037 !important; color: white !important; }
+        .clam-green { background-color: #2E7D32 !important; color: white !important; }
+        .border-brown { border-color: #5D4037 !important; border-width: 2px; }
+        .text-brown { color: #5D4037 !important; }
+        .char-img { width: 100%; height: 250px; object-fit: cover; border-bottom: 2px solid #5D4037; }
+        
+        /* Interactive Cards */
+        .card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; cursor: pointer; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important; }
+        
+        /* Background Decorations */
+        .bg-character { pointer-events: none; user-select: none; z-index: 0; opacity: 0.8; transition: opacity 0.5s ease; }
+    </style>
+</head>
+<body>
+
+    <div id="bgDecor">
+        <div class="position-fixed bottom-0 start-0 m-2 d-none d-lg-block bg-character">
+            <img src="BackgroundQuagmire.png" style="height: 300px; transform: rotate(5deg);" alt="Quagmire">
+        </div>
+        <div class="position-fixed top-0 start-0 m-4 d-none d-xl-block bg-character">
+            <img src="BackgroundQuagmire.png" style="height: 180px; opacity: 0.6; transform: scaleX(-1) rotate(-10deg);" alt="Quagmire Small">
+        </div>
+        <div class="position-fixed top-0 end-0 mt-5 pt-5 me-2 d-none d-xl-block bg-character">
+            <img src="BackgroundGoldPeter.png" style="height: 250px; transform: rotate(-5deg);" alt="Gold Peter">
+        </div>
+        <div class="position-fixed bottom-0 end-0 m-3 d-none d-lg-block bg-character">
+            <img src="BackgroundGoldPeter.png" style="height: 200px; opacity: 0.7; transform: rotate(10deg);" alt="Gold Peter Small">
+        </div>
+    </div>
+
+    <nav id="navMain" class="navbar navbar-expand-lg navbar-dark clam-green shadow d-none" style="position: relative; z-index: 10;">
+        <div class="container-fluid">
+            <span class="navbar-brand fw-bold">The Drunken Clam's Database</span>
+            <div class="d-flex ms-auto">
+                <input id="txtSearch" class="form-control me-2 border-brown" type="search" placeholder="Get to Giggity-in!">
+                <button class="btn clam-brown fw-bold" onclick="sessionStorage.clear(); location.reload();">Get Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="divAuth" class="container my-5" style="position: relative; z-index: 5;">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card border-brown shadow-lg">
+                    <div class="card-header clam-brown text-center py-3">
+                        <h4 class="mb-0 fw-bold">Clam Member Access</h4>
+                    </div>
+                    <div class="card-body p-4 bg-light">
+                        <ul class="nav nav-pills nav-fill mb-4" id="authTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active clam-green fw-bold" id="login-tab" data-bs-toggle="tab" data-bs-target="#loginPane" type="button">Regulars</button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link text-brown fw-bold" id="register-tab" data-bs-toggle="tab" data-bs-target="#registerPane" type="button">New Guys</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="loginPane" role="tabpanel">
+                                <div class="mb-3">
+                                    <label class="form-label text-brown fw-bold small">EMAIL</label>
+                                    <input type="email" class="form-control border-brown" id="txtLoginEmail">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label text-brown fw-bold small">PASSWORD</label>
+                                    <input type="password" class="form-control border-brown" id="txtLoginPassword">
+                                </div>
+                                <button id="btnLogin" type="button" class="btn clam-green fw-bold w-100 shadow-sm">Enter the Clam</button>
+                            </div>
+                            <div class="tab-pane fade" id="registerPane" role="tabpanel">
+                                <div class="text-center mb-3">
+                                    <img src="JoeSwanson.png" class="img-fluid rounded border-brown shadow-sm" style="max-height: 150px;" alt="Joe Swanson">
+                                    <p class="text-brown fw-bold mt-2 small">GET IT DONE, NEW GUY!</p>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control mb-2 border-brown" id="txtFirstName" placeholder="First Name">
+                                    <input type="text" class="form-control mb-2 border-brown" id="txtLastName" placeholder="Last Name">
+                                    <input type="email" class="form-control mb-2 border-brown" id="txtEmail" placeholder="Email Address">
+                                    <input type="password" class="form-control border-brown" id="txtPassword" placeholder="Password">
+                                </div>
+                                <button id="btnRegister" type="button" class="btn clam-brown w-100 shadow-sm mt-3">Join the Neighborhood</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="divDashboard" class="container-fluid px-5 my-5 d-none text-center" style="position: relative; z-index: 5;">
+        <div id="loadingSpinner" class="spinner-border text-white my-5" role="status"></div>
+        <div id="divStats" class="mb-4 d-none">
+            <span class="badge clam-brown px-3 py-2">Residents Tracked: <span id="spanCount">0</span></span>
+        </div>
+        <div id="divResults" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 d-none"></div>
+    </div>
+
+    <div class="modal fade" id="charModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-brown shadow-lg">
+                <div class="modal-header clam-brown">
+                    <h5 class="modal-title fw-bold" id="modalName">Resident Dossier</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body bg-light text-start">
+                    <div class="p-3 bg-white border border-brown rounded shadow-sm">
+                        <p class="mb-2 text-brown fw-bold">OCCUPATION: <span id="modalOccupation" class="text-dark fw-normal"></span></p>
+                        <hr class="border-brown">
+                        <p class="mb-0 text-brown fw-bold">HOBBIES: <span id="modalHobbies" class="text-dark fw-normal"></span></p>
+                    </div>
+                    <audio id="characterAudio" class="d-none"></audio>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const strBaseUrl = 'https://www.swollenhippo.com/DS3870/Characters/api/';
+        const charModal = new bootstrap.Modal(document.getElementById('charModal'));
+
+        const objAudioLibrary = {
+            "Peter Griffin": "PeterGriffin.mp3", "Lois Griffin": "LoisGriffin.mp3", "Stewie Griffin": "StewieGriffin.mp3",
+            "Brian Griffin": "BrianGriffin.mp3", "Chris Griffin": "ChrisGriffin.mp3", "Meg Griffin": "MegGriffin.mp3",
+            "Glenn Quagmire": "GlennQuagmire.mp3", "Cleveland Brown": "ClevelandBrown.mp3", "Joe Swanson": "JoeSwanson.mp3",
+            "Herbert": "Herbert.mp3"
+        };
+
+        const objHobbyLibrary = {
+            "Peter Griffin": "Drinking at The Drunken Clam and creating elaborate schemes.",
+            "Lois Griffin": "Playing piano and giving piano lessons.",
+            "Stewie Griffin": "Building advanced weapons and plotting world domination.",
+            "Brian Griffin": "Writing novels and listening to jazz.",
+            "Chris Griffin": "Watching television and drawing.",
+            "Meg Griffin": "Trying to fit in at school.",
+            "Glenn Quagmire": "Pursuing women and flying airplanes.",
+            "Cleveland Brown": "Relaxing and spending time with family.",
+            "Joe Swanson": "Police work and extreme sports.",
+            "Herbert": "Singing and walking his dog."
+        };
+
+        const objImageLibrary = {
+            "Peter Griffin": "PeterGriffin.png", "Lois Griffin": "LoisGriffin.png", "Stewie Griffin": "StewieGriffin.png",
+            "Brian Griffin": "BrianGriffin.png", "Chris Griffin": "ChrisGriffin.png", "Meg Griffin": "MegGriffin.png",
+            "Glenn Quagmire": "GlennQuagmire.png", "Cleveland Brown": "ClevelandBrown.png", "Joe Swanson": "JoeSwanson.png",
+            "Herbert": "Herbert.png"
+        };
+
+        window.addEventListener('load', function() {
+            const savedSessionID = sessionStorage.getItem("SessionID");
+            if (savedSessionID) {
+                showDashboard(savedSessionID);
+            }
+        });
+
+        function showDashboard(sid) {
+            document.querySelector('#bgDecor').classList.add('d-none'); 
+            document.querySelector('#divAuth').classList.add('d-none');
+            document.querySelector('#divDashboard').classList.remove('d-none');
+            document.querySelector('#navMain').classList.remove('d-none');
+            loadCharacters(sid);
+        }
+
+        document.querySelector('#btnLogin').addEventListener('click', function() {
+            const body = { Email: document.querySelector('#txtLoginEmail').value, Password: document.querySelector('#txtLoginPassword').value };
+            fetch(`${strBaseUrl}sessions.php`, { method: 'POST', body: JSON.stringify(body) })
+            .then(res => res.json())
+            .then(data => {
+                if(data.SessionID) {
+                    sessionStorage.setItem("SessionID", data.SessionID);
+                    Swal.fire({
+                        title: 'What the deuce?!',
+                        text: 'Victory is mine! You are logged in.',
+                        imageUrl: 'StewieGriffin.png',
+                        imageHeight: 200,
+                        confirmButtonText: 'Giggity!',
+                        confirmButtonColor: '#2E7D32'
+                    }).then(() => {
+                        showDashboard(data.SessionID);
+                    });
+                } else { 
+                    Swal.fire('Error', 'Try Again Meg.', 'error'); 
+                }
+            });
+        });
+
+        document.querySelector('#btnRegister').addEventListener('click', function() {
+            const body = { Email: document.querySelector('#txtEmail').value, FirstName: document.querySelector('#txtFirstName').value, LastName: document.querySelector('#txtLastName').value, Password: document.querySelector('#txtPassword').value };
+            fetch(`${strBaseUrl}users.php`, { method: 'POST', body: JSON.stringify(body) })
+            .then(res => res.json())
+            .then(() => {
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#2E7D32', '#5D4037', '#ffffff']
+                });
+                Swal.fire({
+                    title: 'Success!',
+                    text: "Hey Peter, I've granted you access.",
+                    icon: 'success',
+                    confirmButtonColor: '#5D4037'
+                });
+                bootstrap.Tab.getInstance(document.querySelector('#login-tab')).show();
+            });
+        });
+
+        function loadCharacters(sessionID) {
+            fetch(`${strBaseUrl}characters.php?SessionID=${sessionID}`)
+            .then(res => res.json())
+            .then(data => {
+                data.push({ FirstName: "Herbert", LastName: "", Occupation: "Retired", Hobbies: "" });
+                document.getElementById('spanCount').innerText = data.length;
+                document.getElementById('divStats').classList.remove('d-none');
+                
+                let html = '';
+                data.forEach(char => {
+                    let fName = char.FirstName;
+                    let lName = char.LastName;
+                    if(lName === "Quagmire" && fName === "Quagmire") { fName = "Glenn"; }
+                    let fullName = (lName === "") ? fName : `${fName} ${lName}`;
+                    
+                    let tabProgress = Math.floor(Math.random() * 90) + 10;
+                    let progressClass = tabProgress > 70 ? 'bg-danger' : (tabProgress > 40 ? 'bg-warning' : 'bg-success');
+
+                    let imgSrc = objImageLibrary[fullName] || "";
+                    let imgHtml = imgSrc ? `<img src="${imgSrc}" class="char-img">` : `<div class="bg-secondary char-img d-flex align-items-center justify-content-center text-white">No Photo</div>`;
+
+                    html += `
+                        <div class="col char-card">
+                            <div class="card h-100 border-brown shadow" onclick="showDetails('${fullName}', '${char.Occupation}', '${(objHobbyLibrary[fullName] || "No hobbies listed.").replace(/'/g, "\\'")}')">
+                                ${imgHtml}
+                                <div class="card-body text-center d-flex flex-column bg-white p-3">
+                                    <span class="badge clam-green mb-2 w-50 mx-auto">${char.Occupation === 'Retired' ? 'Senior' : 'Regular'}</span>
+                                    <h5 class="card-title text-brown fw-bold mb-0">${fullName}</h5>
+                                    <p class="text-muted small mb-2">${char.Occupation}</p>
+                                    
+                                    <div class="mt-auto">
+                                        <p class="text-brown fw-bold small mb-1">Clam Tab Balance</p>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar ${progressClass} fw-bold" role="progressbar" style="width: ${tabProgress}%">${tabProgress}%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+                document.getElementById('loadingSpinner').classList.add('d-none');
+                document.getElementById('divResults').innerHTML = html;
+                document.getElementById('divResults').classList.remove('d-none');
+            });
+        }
+
+        function showDetails(name, occ, hob) {
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('modalOccupation').innerText = occ;
+            document.getElementById('modalHobbies').innerText = hob;
+            const audioPlayer = document.getElementById('characterAudio');
+            const stopAudio = function() {
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                document.getElementById('charModal').removeEventListener('hidden.bs.modal', stopAudio);
+            };
+            document.getElementById('charModal').addEventListener('hidden.bs.modal', stopAudio);
+            if(objAudioLibrary[name]) {
+                audioPlayer.src = objAudioLibrary[name];
+                audioPlayer.load();
+                setTimeout(() => { audioPlayer.play().catch(e => console.log(e)); }, 50);
+            }
+            charModal.show();
+        }
+
+        document.querySelector('#txtSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('#divResults .col').forEach(card => {
+                const name = card.querySelector('.card-title').innerText.toLowerCase();
+                card.classList.toggle('d-none', !name.includes(searchTerm));
+            });
+        });
+    </script>
+</body>
+</html>
